@@ -2,18 +2,27 @@ import time
 start_time = time.time()
 from PIL import Image
 import torch
-from diffusers import StableDiffusionInpaintPipeline
+from diffusers import AutoPipelineForInpainting
 
-prompt = "a litter of puppies"
 
-pipe = StableDiffusionInpaintPipeline.from_pretrained(
+models = [
     "runwayml/stable-diffusion-inpainting",
-    variant="fp16",
-    # torch_dtype=torch.float16,
+    "diffusers/stable-diffusion-xl-1.0-inpainting-0.1",
+    "kandinsky-community/kandinsky-2-2-decoder-inpaint",
+]
+
+model = models[1]
+
+prompt = "puppies sitting on a park bench, high resolution"
+
+pipe = AutoPipelineForInpainting.from_pretrained(
+    model,
+    # variant="fp16", # uncomment if using stable diffusion variant
     torch_dtype=torch.float32,
     use_safetensors=True,
-    safety_checker = None,
+    safety_checker = None
 )
+
 pipe.enable_sequential_cpu_offload()
 pipe.enable_attention_slicing("max")
 
